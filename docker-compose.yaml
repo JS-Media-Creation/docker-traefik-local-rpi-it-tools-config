@@ -1,24 +1,14 @@
 services:
-  homebridge:
-    image: homebridge/homebridge:2024-05-02
-    container_name: homebridge
-    restart: always
-    network_mode: host
-    volumes:
-      - homebridge:/homebridge
-    environment:
-      TZ: 'Europe/Berlin'
-    logging:
-      driver: json-file
-      options:
-        max-size: '10m'
-        max-file: '1'
-    healthcheck:
-      test: curl --fail localhost:8581 || exit 1
-      interval: 60s
-      retries: 5
-      start_period: 300s
-      timeout: 2s
-volumes:
-  homebridge:
-    driver: local
+    it-tools:
+        image: 'corentinth/it-tools:latest'
+        restart: always
+        container_name: it-tools
+        networks:
+          - traefik_proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.it-tools.rule=Host(`it-tools.rpi.local`)"
+          - "traefik.http.services.it-tools.loadbalancer.server.port=80"
+networks:
+  traefik_proxy:
+    external: true
